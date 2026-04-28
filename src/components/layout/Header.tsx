@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/buscar", label: "Buscar fisios" },
-  { to: "/como-funciona", label: "Cómo funciona" },
-  { to: "/para-fisios", label: "Para fisioterapeutas" },
+  { to: "/", label: "Inicio" },
+  { to: "/buscar", label: "Especialistas" },
 ];
 
 export const Header = () => {
@@ -28,6 +27,7 @@ export const Header = () => {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === "/"}
               className={({ isActive }) =>
                 cn(
                   "px-4 py-2 text-sm font-medium rounded-md transition-smooth",
@@ -38,6 +38,13 @@ export const Header = () => {
               {item.label}
             </NavLink>
           ))}
+          <Link
+            to="/registro-fisio"
+            className="ml-1 px-4 py-2 text-sm font-semibold rounded-md bg-health/10 text-health hover:bg-health hover:text-white transition-smooth flex items-center gap-1.5"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-health animate-pulse" />
+            ¿Eres fisio? Únete
+          </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
@@ -76,6 +83,14 @@ export const Header = () => {
                 {item.label}
               </NavLink>
             ))}
+            <Link
+              to="/registro-fisio"
+              onClick={() => setOpen(false)}
+              className="px-4 py-3 text-sm font-semibold rounded-md bg-health/10 text-health flex items-center gap-2"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-health animate-pulse" />
+              ¿Eres fisio? Únete
+            </Link>
             <div className="flex gap-2 pt-2 border-t mt-2">
               <Button variant="ghost" className="flex-1" asChild>
                 <Link to="/login" onClick={() => setOpen(false)}>Iniciar sesión</Link>
