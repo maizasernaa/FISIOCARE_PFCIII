@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/buscar", label: "Buscar fisios" },
-  { to: "/como-funciona", label: "Cómo funciona" },
-  { to: "/para-fisios", label: "Para fisioterapeutas" },
+  { to: "/", label: "Inicio" },
+  { to: "/buscar", label: "Especialistas" },
 ];
 
 export const Header = () => {
