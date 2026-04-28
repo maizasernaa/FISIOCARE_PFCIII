@@ -13,6 +13,11 @@ import Booking from "./pages/Booking";
 import PatientDashboard from "./pages/PatientDashboard";
 import PhysioRegister from "./pages/PhysioRegister";
 import PhysioDashboard from "./pages/PhysioDashboard";
+import MyAppointments from "./pages/patient/MyAppointments";
+import ClinicalNotes from "./pages/patient/ClinicalNotes";
+import HomeExercises from "./pages/patient/HomeExercises";
+import Messages from "./pages/patient/Messages";
+import MyHealth from "./pages/patient/MyHealth";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +43,11 @@ const App = () => (
           <Route path="/registro" element={<Auth mode="register" />} />
           <Route path="/registro-fisio" element={<PhysioRegister />} />
           <Route path="/dashboard" element={<PatientDashboard />} />
+          <Route path="/dashboard/citas" element={<MyAppointments />} />
+          <Route path="/dashboard/notas" element={<ClinicalNotes />} />
+          <Route path="/dashboard/ejercicios" element={<HomeExercises />} />
+          <Route path="/dashboard/mensajes" element={<Messages />} />
+          <Route path="/dashboard/salud" element={<MyHealth />} />
           <Route path="/dashboard-fisio" element={<PhysioDashboard />} />
 
           <Route path="*" element={<NotFound />} />
