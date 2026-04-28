@@ -3,8 +3,16 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { PublicLayout } from "@/components/layout/PublicLayout";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import SearchPage from "./pages/SearchPage";
+import PhysioProfile from "./pages/PhysioProfile";
+import Booking from "./pages/Booking";
+import PatientDashboard from "./pages/PatientDashboard";
+import PhysioRegister from "./pages/PhysioRegister";
+import PhysioDashboard from "./pages/PhysioDashboard";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +23,23 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Public layout (header/footer) */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/buscar" element={<SearchPage />} />
+            <Route path="/fisio/:id" element={<PhysioProfile />} />
+            <Route path="/agendar/:id" element={<Booking />} />
+            <Route path="/como-funciona" element={<Index />} />
+            <Route path="/para-fisios" element={<Index />} />
+          </Route>
+
+          {/* Standalone pages */}
+          <Route path="/login" element={<Auth mode="login" />} />
+          <Route path="/registro" element={<Auth mode="register" />} />
+          <Route path="/registro-fisio" element={<PhysioRegister />} />
+          <Route path="/dashboard" element={<PatientDashboard />} />
+          <Route path="/dashboard-fisio" element={<PhysioDashboard />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
