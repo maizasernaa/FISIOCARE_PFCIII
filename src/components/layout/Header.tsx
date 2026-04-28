@@ -83,6 +83,14 @@ export const Header = () => {
                 {item.label}
               </NavLink>
             ))}
+            <Link
+              to="/registro-fisio"
+              onClick={() => setOpen(false)}
+              className="px-4 py-3 text-sm font-semibold rounded-md bg-health/10 text-health flex items-center gap-2"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-health animate-pulse" />
+              ¿Eres fisio? Únete
+            </Link>
             <div className="flex gap-2 pt-2 border-t mt-2">
               <Button variant="ghost" className="flex-1" asChild>
                 <Link to="/login" onClick={() => setOpen(false)}>Iniciar sesión</Link>
