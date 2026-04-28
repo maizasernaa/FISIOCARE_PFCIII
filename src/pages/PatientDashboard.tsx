@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Home, Video, FileText, Activity, ChevronRight, Plus } from "lucide-react";
+import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_APPOINTMENTS, PHYSIOS } from "@/data/mockData";
+import { Progress } from "@/components/ui/progress";
+import { MOCK_APPOINTMENTS } from "@/data/mockData";
 import { Header } from "@/components/layout/Header";
 
 const PatientDashboard = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
   const completed = MOCK_APPOINTMENTS.filter(a => a.status === "completed");
-  const next = upcoming[0];
-  const nextPhysio = next ? PHYSIOS.find(p => p.id === next.physioId) : null;
+  const totalPlan = 6;
+  const progressPct = Math.round((completed.length / totalPlan) * 100);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -26,50 +27,56 @@ const PatientDashboard = () => {
           <StatCard icon={Calendar} label="Próximas" value={upcoming.length.toString()} color="brand" />
           <StatCard icon={Activity} label="Completadas" value={completed.length.toString()} color="health" />
           <StatCard icon={FileText} label="Notas clínicas" value={completed.filter(c => c.notes).length.toString()} color="brand" />
-          <StatCard icon={Clock} label="Próx. en" value={next ? "2 días" : "—"} color="health" />
+          <StatCard icon={TrendingUp} label="Progreso" value={`${progressPct}%`} color="health" />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Next session */}
+          {/* Menú principal del paciente + avance */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-6 shadow-card">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl font-semibold text-navy">Próxima sesión</h2>
-                <Button variant="soft" size="sm" asChild>
-                  <Link to="/buscar"><Plus className="h-4 w-4" /> Agendar</Link>
-                </Button>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-display text-xl font-semibold text-navy">Mi avance</h2>
+                <Badge variant="secondary" className="bg-health-soft text-health border-0">
+                  {completed.length} de {totalPlan} sesiones
+                </Badge>
               </div>
 
-              {next && nextPhysio ? (
-                <div className="bg-gradient-soft rounded-xl p-5 border border-brand/10">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <img src={nextPhysio.photo} alt={nextPhysio.name} className="w-16 h-16 rounded-xl object-cover" />
-                    <div className="flex-1">
-                      <div className="font-display font-semibold text-navy text-lg">{nextPhysio.name}</div>
-                      <div className="text-sm text-muted-foreground">{nextPhysio.specialties.join(" • ")}</div>
-                      <div className="flex flex-wrap gap-3 mt-3 text-sm">
-                        <span className="flex items-center gap-1.5 text-foreground">
-                          <Calendar className="h-4 w-4 text-brand" />
-                          {new Date(next.date).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-foreground">
-                          <Clock className="h-4 w-4 text-brand" />{next.time}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-foreground">
-                          {next.modality === "domicilio" ? <Home className="h-4 w-4 text-brand" /> : <Video className="h-4 w-4 text-brand" />}
-                          {next.modality === "domicilio" ? "Domicilio" : "Videollamada"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex md:flex-col gap-2">
-                      <Button variant="outline" size="sm">Reprogramar</Button>
-                      <Button variant="hero" size="sm" asChild><Link to={`/fisio/${nextPhysio.id}`}>Ver perfil</Link></Button>
-                    </div>
+              <div className="bg-gradient-soft rounded-xl p-5 border border-brand/10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-navy">Plan de tratamiento</div>
+                    <div className="text-xs text-muted-foreground">Recuperación lumbar</div>
                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">No tienes sesiones próximas.</div>
-              )}
+                <Progress value={progressPct} className="h-2.5" />
+                <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                  <span>Inicio</span>
+                  <span className="font-semibold text-brand">{progressPct}% completado</span>
+                  <span>Meta</span>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-3 mt-5">
+                <MiniStat icon={HeartPulse} label="Dolor" value="3/10" trend="-2" />
+                <MiniStat icon={Activity} label="Movilidad" value="78%" trend="+12" />
+                <MiniStat icon={Calendar} label="Asistencia" value="100%" trend="" />
+              </div>
+            </Card>
+
+            {/* Menú principal */}
+            <Card className="p-6 shadow-card">
+              <h2 className="font-display text-xl font-semibold text-navy mb-4">Menú principal</h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <MenuItem to="/buscar" icon={Search} title="Buscar fisioterapeuta" desc="Agenda una nueva sesión" color="brand" />
+                <MenuItem to="/dashboard" icon={Calendar} title="Mis citas" desc={`${upcoming.length} próximas programadas`} color="health" />
+                <MenuItem to="/dashboard" icon={FileText} title="Notas clínicas" desc="Recomendaciones de tu fisio" color="brand" />
+                <MenuItem to="/dashboard" icon={BookOpen} title="Ejercicios en casa" desc="Rutinas asignadas para ti" color="health" />
+                <MenuItem to="/dashboard" icon={MessageSquare} title="Mensajes" desc="Conversa con tu profesional" color="brand" />
+                <MenuItem to="/dashboard" icon={HeartPulse} title="Mi salud" desc="Historial y registros" color="health" />
+              </div>
             </Card>
 
             {/* History */}
@@ -147,6 +154,34 @@ const QuickAction = ({ to, label }: { to: string; label: string }) => (
   <Link to={to} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-smooth text-sm">
     <span>{label}</span>
     <ChevronRight className="h-4 w-4 text-muted-foreground" />
+  </Link>
+);
+
+const MiniStat = ({ icon: Icon, label, value, trend }: { icon: any; label: string; value: string; trend: string }) => (
+  <div className="rounded-lg border border-border/60 bg-background p-3">
+    <div className="flex items-center gap-2 text-muted-foreground text-xs">
+      <Icon className="h-3.5 w-3.5" /> {label}
+    </div>
+    <div className="flex items-end justify-between mt-1">
+      <div className="font-display text-lg font-bold text-navy">{value}</div>
+      {trend && <span className="text-xs font-semibold text-health">{trend}</span>}
+    </div>
+  </div>
+);
+
+const MenuItem = ({ to, icon: Icon, title, desc, color }: { to: string; icon: any; title: string; desc: string; color: "brand" | "health" }) => (
+  <Link
+    to={to}
+    className="group flex items-start gap-3 p-4 rounded-xl border border-border/60 hover:border-brand/40 hover:shadow-card transition-smooth bg-background"
+  >
+    <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${color === "brand" ? "bg-brand-soft text-brand" : "bg-health-soft text-health"}`}>
+      <Icon className="h-5 w-5" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="font-semibold text-sm text-navy">{title}</div>
+      <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
+    </div>
+    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand transition-smooth shrink-0" />
   </Link>
 );
 
