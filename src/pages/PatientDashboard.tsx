@@ -71,11 +71,11 @@ const PatientDashboard = () => {
               <h2 className="font-display text-xl font-semibold text-navy mb-4">Menú principal</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 <MenuItem to="/buscar" icon={Search} title="Buscar fisioterapeuta" desc="Agenda una nueva sesión" color="brand" />
-                <MenuItem to="/dashboard" icon={Calendar} title="Mis citas" desc={`${upcoming.length} próximas programadas`} color="health" />
-                <MenuItem to="/dashboard" icon={FileText} title="Notas clínicas" desc="Recomendaciones de tu fisio" color="brand" />
-                <MenuItem to="/dashboard" icon={BookOpen} title="Ejercicios en casa" desc="Rutinas asignadas para ti" color="health" />
-                <MenuItem to="/dashboard" icon={MessageSquare} title="Mensajes" desc="Conversa con tu profesional" color="brand" />
-                <MenuItem to="/dashboard" icon={HeartPulse} title="Mi salud" desc="Historial y registros" color="health" />
+                <MenuItem to="/dashboard/citas" icon={Calendar} title="Mis citas" desc={`${upcoming.length} próximas programadas`} color="health" />
+                <MenuItem to="/dashboard/notas" icon={FileText} title="Notas clínicas" desc="Recomendaciones de tu fisio" color="brand" />
+                <MenuItem to="/dashboard/ejercicios" icon={BookOpen} title="Ejercicios en casa" desc="Rutinas asignadas para ti" color="health" />
+                <MenuItem to="/dashboard/mensajes" icon={MessageSquare} title="Mensajes" desc="Conversa con tu profesional" color="brand" />
+                <MenuItem to="/dashboard/salud" icon={HeartPulse} title="Mi salud" desc="Historial y registros" color="health" />
               </div>
             </Card>
 
