@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Home, Video, FileText, Activity, ChevronRight, Plus } from "lucide-react";
+import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_APPOINTMENTS, PHYSIOS } from "@/data/mockData";
+import { Progress } from "@/components/ui/progress";
+import { MOCK_APPOINTMENTS } from "@/data/mockData";
 import { Header } from "@/components/layout/Header";
 
 const PatientDashboard = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
   const completed = MOCK_APPOINTMENTS.filter(a => a.status === "completed");
-  const next = upcoming[0];
-  const nextPhysio = next ? PHYSIOS.find(p => p.id === next.physioId) : null;
+  const totalPlan = 6;
+  const progressPct = Math.round((completed.length / totalPlan) * 100);
 
   return (
     <div className="min-h-screen bg-muted/30">
