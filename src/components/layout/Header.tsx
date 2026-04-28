@@ -27,6 +27,7 @@ export const Header = () => {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === "/"}
               className={({ isActive }) =>
                 cn(
                   "px-4 py-2 text-sm font-medium rounded-md transition-smooth",
@@ -37,6 +38,13 @@ export const Header = () => {
               {item.label}
             </NavLink>
           ))}
+          <Link
+            to="/registro-fisio"
+            className="ml-1 px-4 py-2 text-sm font-semibold rounded-md bg-health/10 text-health hover:bg-health hover:text-white transition-smooth flex items-center gap-1.5"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-health animate-pulse" />
+            ¿Eres fisio? Únete
+          </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
