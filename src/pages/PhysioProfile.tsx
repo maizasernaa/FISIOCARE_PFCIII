@@ -163,6 +163,28 @@ const PhysioProfile = () => {
               ))}
             </div>
           </Card>
+
+          {/* FAQ */}
+          <Card className="p-6 shadow-card">
+            <h2 className="font-display font-semibold text-navy mb-4 flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-brand" /> Preguntas frecuentes
+            </h2>
+            <Accordion type="single" collapsible className="space-y-2">
+              {FAQ_ITEMS.slice(0, 6).map((f, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="border rounded-lg px-4">
+                  <AccordionTrigger className="text-left text-sm font-semibold text-navy hover:no-underline py-3">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-foreground/80 leading-relaxed">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <div className="mt-4 text-center">
+              <Link to="/faq" className="text-sm text-brand font-semibold hover:underline">Ver todas las preguntas →</Link>
+            </div>
+          </Card>
         </div>
 
         {/* Booking sidebar */}
