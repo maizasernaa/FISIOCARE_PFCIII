@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, MapPin, Video, X } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, Video, X, Eye } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_APPOINTMENTS } from "@/data/mockData";
+import { SessionDetailDialog } from "@/components/SessionDetailDialog";
 
 const MyAppointments = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
