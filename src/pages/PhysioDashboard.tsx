@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Calendar, Users, DollarSign, FileText, Home, Video, Check, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Calendar, Users, DollarSign, FileText, Home, Video, Check, Clock, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Header } from "@/components/layout/Header";
-import { PHYSIO_TODAY_PATIENTS } from "@/data/mockData";
+import { PHYSIO_TODAY_PATIENTS, PHYSIO_RECENT_CHATS } from "@/data/mockData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -154,6 +155,42 @@ const PhysioDashboard = () => {
                       </div>
                     )}
                   </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6 shadow-card">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display font-semibold text-navy flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-brand" /> Mensajes recientes
+                </h3>
+                {PHYSIO_RECENT_CHATS.some(c => c.unread > 0) && (
+                  <Badge className="bg-destructive text-destructive-foreground border-0 text-[10px] h-5">
+                    {PHYSIO_RECENT_CHATS.reduce((s, c) => s + c.unread, 0)} nuevos
+                  </Badge>
+                )}
+              </div>
+              <div className="space-y-2">
+                {PHYSIO_RECENT_CHATS.map(c => (
+                  <Link
+                    key={c.physioId}
+                    to="/dashboard/mensajes"
+                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-smooth"
+                  >
+                    <div className="relative">
+                      <img src={c.photo} alt={c.physioName} className="h-10 w-10 rounded-full object-cover" />
+                      {c.unread > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-destructive ring-2 ring-background" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-semibold text-sm text-navy truncate">{c.physioName}</div>
+                        <span className="text-[10px] text-muted-foreground shrink-0">{c.time}</span>
+                      </div>
+                      <div className={`text-xs truncate ${c.unread > 0 ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{c.lastMessage}</div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </Card>

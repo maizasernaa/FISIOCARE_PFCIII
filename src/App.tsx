@@ -18,6 +18,7 @@ import ClinicalNotes from "./pages/patient/ClinicalNotes";
 import HomeExercises from "./pages/patient/HomeExercises";
 import Messages from "./pages/patient/Messages";
 import MyHealth from "./pages/patient/MyHealth";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/agendar/:id" element={<Booking />} />
             <Route path="/como-funciona" element={<Index />} />
             <Route path="/para-fisios" element={<Index />} />
+            <Route path="/faq" element={<FAQ />} />
           </Route>
 
           {/* Standalone pages */}

@@ -1,26 +1,58 @@
 import { Link } from "react-router-dom";
-import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare } from "lucide-react";
+import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare, Bell, MessageCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { MOCK_APPOINTMENTS } from "@/data/mockData";
+import { MOCK_APPOINTMENTS, RECENT_CHATS } from "@/data/mockData";
 import { Header } from "@/components/layout/Header";
+import { SessionDetailDialog } from "@/components/SessionDetailDialog";
 
 const PatientDashboard = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
   const completed = MOCK_APPOINTMENTS.filter(a => a.status === "completed");
   const totalPlan = 6;
   const progressPct = Math.round((completed.length / totalPlan) * 100);
+  const unreadChats = RECENT_CHATS.reduce((s, c) => s + c.unread, 0);
+
+  // Find appointment within next 24h for reminder banner
+  const now = Date.now();
+  const next24h = upcoming.find(a => {
+    const apt = new Date(`${a.date}T${a.time}:00`).getTime();
+    return apt > now && apt - now <= 24 * 60 * 60 * 1000;
+  });
 
   return (
     <div className="min-h-screen bg-muted/30">
       <Header />
       <div className="container py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-navy">Hola, María 👋</h1>
           <p className="text-muted-foreground mt-1">Aquí está el resumen de tu recuperación</p>
         </div>
+
+        {/* 24h reminder banner */}
+        {next24h && (
+          <Card className="mb-6 p-4 md:p-5 border-l-4 border-l-warning bg-warning/5 shadow-card animate-fade-in">
+            <div className="flex items-start gap-3 flex-wrap">
+              <div className="h-10 w-10 rounded-lg bg-warning/15 text-warning flex items-center justify-center shrink-0">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-[200px]">
+                <div className="font-semibold text-navy">Recordatorio: tienes una sesión en las próximas 24 horas</div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {next24h.physioName} · {new Date(next24h.date).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })} · {next24h.time} · {next24h.modality === "videollamada" ? "Videollamada" : "A domicilio"}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1.5">
+                  Te enviaremos también un recordatorio por WhatsApp y correo.
+                </div>
+              </div>
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/dashboard/citas">Ver cita</Link>
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -89,20 +121,21 @@ const PatientDashboard = () => {
                       <div>
                         <div className="font-semibold text-sm">{apt.physioName}</div>
                         <div className="text-xs text-muted-foreground mt-0.5">
-                          {new Date(apt.date).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' })} · {apt.time}
+                          {new Date(apt.date).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' })} · {apt.time} · {apt.modality === "videollamada" ? "Videollamada" : "Domicilio"}
                         </div>
                       </div>
-                      <Badge variant="secondary" className="bg-health-soft text-health border-0">Completada</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="bg-health-soft text-health border-0">Completada</Badge>
+                        <SessionDetailDialog
+                          apt={apt}
+                          trigger={
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-3.5 w-3.5" /> Ver detalle
+                            </Button>
+                          }
+                        />
+                      </div>
                     </div>
-                    {apt.notes && (
-                      <div className="mt-3 pt-3 border-t border-border/60 flex gap-2">
-                        <FileText className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-xs font-semibold text-brand mb-1">Nota del fisioterapeuta</div>
-                          <p className="text-sm text-foreground/80 leading-relaxed">{apt.notes}</p>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -125,12 +158,50 @@ const PatientDashboard = () => {
               </div>
             </Card>
 
+            {/* Recent chats */}
+            <Card className="p-6 shadow-card">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display font-semibold text-navy flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-brand" /> Mensajes recientes
+                </h3>
+                {unreadChats > 0 && (
+                  <Badge className="bg-destructive text-destructive-foreground border-0 text-[10px] h-5">{unreadChats} nuevos</Badge>
+                )}
+              </div>
+              <div className="space-y-2">
+                {RECENT_CHATS.map(c => (
+                  <Link
+                    key={c.physioId}
+                    to="/dashboard/mensajes"
+                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-smooth"
+                  >
+                    <div className="relative">
+                      <img src={c.photo} alt={c.physioName} className="h-10 w-10 rounded-full object-cover" />
+                      {c.unread > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-destructive ring-2 ring-background" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-semibold text-sm text-navy truncate">{c.physioName}</div>
+                        <span className="text-[10px] text-muted-foreground shrink-0">{c.time}</span>
+                      </div>
+                      <div className={`text-xs truncate ${c.unread > 0 ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{c.lastMessage}</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <Button variant="ghost" size="sm" className="w-full mt-2" asChild>
+                <Link to="/dashboard/mensajes">Ver todos los mensajes</Link>
+              </Button>
+            </Card>
+
             <Card className="p-6 shadow-card">
               <h3 className="font-display font-semibold text-navy mb-4">Acciones rápidas</h3>
               <div className="space-y-2">
                 <QuickAction to="/buscar" label="Buscar fisioterapeuta" />
-                <QuickAction to="/dashboard" label="Mis notas clínicas" />
-                <QuickAction to="/" label="Centro de ayuda" />
+                <QuickAction to="/dashboard/notas" label="Mis notas clínicas" />
+                <QuickAction to="/faq" label="Preguntas frecuentes" />
               </div>
             </Card>
           </div>

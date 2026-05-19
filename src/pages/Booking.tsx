@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
+import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { PHYSIOS, type Modality } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { CancellationPolicyDialog } from "@/components/CancellationPolicyDialog";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -196,11 +197,20 @@ const Booking = () => {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-health-soft rounded-lg flex gap-3">
+            <div className="mt-4 p-4 bg-health-soft rounded-lg flex gap-3 items-start">
               <ShieldCheck className="h-5 w-5 text-health shrink-0 mt-0.5" />
-              <p className="text-xs text-foreground/80">
-                Cancelación gratuita hasta 12 horas antes. Reembolso completo si tu fisio no se presenta.
-              </p>
+              <div className="flex-1">
+                <p className="text-xs text-foreground/80">
+                  Cancelación gratuita hasta 12 horas antes. Reembolso completo si tu fisio no se presenta.
+                </p>
+                <CancellationPolicyDialog
+                  trigger={
+                    <button type="button" className="mt-1.5 text-xs font-semibold text-health hover:underline inline-flex items-center gap-1">
+                      <Info className="h-3 w-3" /> Ver política completa de cancelaciones
+                    </button>
+                  }
+                />
+              </div>
             </div>
           </div>
         )}
@@ -281,6 +291,28 @@ const Booking = () => {
               <Row label="Fecha" value={new Date(date).toLocaleDateString('es', { day: 'numeric', month: 'long' })} />
               <Row label="Hora" value={time} />
               <Row label="Modalidad" value={modality === "domicilio" ? "Domicilio" : "Videollamada"} />
+            </div>
+
+            <div className="max-w-sm mx-auto mt-5 p-4 rounded-lg bg-brand-soft/60 border border-brand/20 text-left">
+              <div className="flex items-start gap-2.5">
+                <div className="flex gap-1 shrink-0">
+                  <MessageCircle className="h-4 w-4 text-brand" />
+                  <Mail className="h-4 w-4 text-brand" />
+                </div>
+                <p className="text-xs text-foreground/85 leading-relaxed">
+                  <strong>Recibirás un recordatorio por WhatsApp y correo 24 horas antes</strong> de tu sesión, con el enlace o dirección y los datos de contacto.
+                </p>
+              </div>
+            </div>
+
+            <div className="max-w-sm mx-auto mt-3">
+              <CancellationPolicyDialog
+                trigger={
+                  <button type="button" className="text-xs text-muted-foreground hover:text-brand underline">
+                    Revisar política de cancelaciones
+                  </button>
+                }
+              />
             </div>
 
             <div className="flex gap-3 justify-center mt-8">

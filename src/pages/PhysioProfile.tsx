@@ -1,9 +1,11 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, ShieldCheck, MapPin, Video, Home, Calendar, Award, GraduationCap } from "lucide-react";
+import { Star, ShieldCheck, MapPin, Video, Home, Calendar, Award, GraduationCap, MessageCircle, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PHYSIOS } from "@/data/mockData";
+import { FAQ_ITEMS } from "@/data/faq";
 
 const PhysioProfile = () => {
   const { id } = useParams();
@@ -45,19 +47,25 @@ const PhysioProfile = () => {
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                       <h1 className="font-display text-2xl md:text-3xl font-bold text-navy">{physio.name}</h1>
+                      {physio.verified && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-health text-health-foreground text-sm font-bold uppercase tracking-wide shadow-card">
+                          <ShieldCheck className="h-4 w-4" strokeWidth={3} /> Verificado
+                        </div>
+                      )}
+                      <div className="text-sm text-health font-semibold mt-1.5">
+                        Colegiatura CFF verificada · {physio.colegiatura}
+                      </div>
                       <div className="flex flex-wrap items-center gap-3 mt-2 text-sm">
                         <span className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-warning text-warning" />
                           <span className="font-semibold">{physio.rating.toFixed(1)}</span>
                           <span className="text-muted-foreground">({physio.reviewCount} reseñas)</span>
                         </span>
-                        {physio.verified && (
-                          <Badge className="bg-health-soft text-health hover:bg-health-soft border-0">
-                            <ShieldCheck className="h-3 w-3 mr-1" /> Verificado
-                          </Badge>
-                        )}
                       </div>
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/dashboard/mensajes"><MessageCircle className="h-4 w-4" /> Mensaje</Link>
+                    </Button>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-4">
@@ -153,6 +161,28 @@ const PhysioProfile = () => {
                   <p className="text-sm text-foreground/80">{r.comment}</p>
                 </div>
               ))}
+            </div>
+          </Card>
+
+          {/* FAQ */}
+          <Card className="p-6 shadow-card">
+            <h2 className="font-display font-semibold text-navy mb-4 flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-brand" /> Preguntas frecuentes
+            </h2>
+            <Accordion type="single" collapsible className="space-y-2">
+              {FAQ_ITEMS.slice(0, 6).map((f, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="border rounded-lg px-4">
+                  <AccordionTrigger className="text-left text-sm font-semibold text-navy hover:no-underline py-3">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-foreground/80 leading-relaxed">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <div className="mt-4 text-center">
+              <Link to="/faq" className="text-sm text-brand font-semibold hover:underline">Ver todas las preguntas →</Link>
             </div>
           </Card>
         </div>

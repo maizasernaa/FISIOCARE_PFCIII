@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, MapPin, Video, X } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, Video, X, Eye } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_APPOINTMENTS } from "@/data/mockData";
+import { SessionDetailDialog } from "@/components/SessionDetailDialog";
 
 const MyAppointments = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
@@ -69,7 +70,13 @@ const MyAppointments = () => {
                       {new Date(apt.date).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' })} · {apt.time}
                     </div>
                   </div>
-                  <Badge variant="secondary" className="bg-health-soft text-health border-0">Completada</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-health-soft text-health border-0">Completada</Badge>
+                    <SessionDetailDialog
+                      apt={apt}
+                      trigger={<Button variant="outline" size="sm"><Eye className="h-3.5 w-3.5" /> Ver detalle</Button>}
+                    />
+                  </div>
                 </div>
               </Card>
             ))}

@@ -20,7 +20,7 @@ export const Footer = () => (
         <h4 className="font-display font-semibold mb-4">Pacientes</h4>
         <ul className="space-y-2 text-sm text-white/70">
           <li><Link to="/buscar" className="hover:text-white transition-smooth">Buscar fisioterapeuta</Link></li>
-          <li><Link to="/como-funciona" className="hover:text-white transition-smooth">Cómo funciona</Link></li>
+          <li><Link to="/faq" className="hover:text-white transition-smooth">Preguntas frecuentes</Link></li>
           <li><Link to="/registro" className="hover:text-white transition-smooth">Crear cuenta</Link></li>
         </ul>
       </div>
