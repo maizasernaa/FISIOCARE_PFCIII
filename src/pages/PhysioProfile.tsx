@@ -1,9 +1,11 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, ShieldCheck, MapPin, Video, Home, Calendar, Award, GraduationCap } from "lucide-react";
+import { Star, ShieldCheck, MapPin, Video, Home, Calendar, Award, GraduationCap, MessageCircle, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PHYSIOS } from "@/data/mockData";
+import { FAQ_ITEMS } from "@/data/faq";
 
 const PhysioProfile = () => {
   const { id } = useParams();
