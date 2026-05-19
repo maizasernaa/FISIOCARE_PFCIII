@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Calendar, Users, DollarSign, FileText, Home, Video, Check, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Calendar, Users, DollarSign, FileText, Home, Video, Check, Clock, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Header } from "@/components/layout/Header";
-import { PHYSIO_TODAY_PATIENTS } from "@/data/mockData";
+import { PHYSIO_TODAY_PATIENTS, PHYSIO_RECENT_CHATS } from "@/data/mockData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
