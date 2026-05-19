@@ -1,26 +1,58 @@
 import { Link } from "react-router-dom";
-import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare } from "lucide-react";
+import { Calendar, Clock, FileText, Activity, ChevronRight, Search, HeartPulse, TrendingUp, Target, BookOpen, MessageSquare, Bell, MessageCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { MOCK_APPOINTMENTS } from "@/data/mockData";
+import { MOCK_APPOINTMENTS, RECENT_CHATS } from "@/data/mockData";
 import { Header } from "@/components/layout/Header";
+import { SessionDetailDialog } from "@/components/SessionDetailDialog";
 
 const PatientDashboard = () => {
   const upcoming = MOCK_APPOINTMENTS.filter(a => a.status === "upcoming");
   const completed = MOCK_APPOINTMENTS.filter(a => a.status === "completed");
   const totalPlan = 6;
   const progressPct = Math.round((completed.length / totalPlan) * 100);
+  const unreadChats = RECENT_CHATS.reduce((s, c) => s + c.unread, 0);
+
+  // Find appointment within next 24h for reminder banner
+  const now = Date.now();
+  const next24h = upcoming.find(a => {
+    const apt = new Date(`${a.date}T${a.time}:00`).getTime();
+    return apt > now && apt - now <= 24 * 60 * 60 * 1000;
+  });
 
   return (
     <div className="min-h-screen bg-muted/30">
       <Header />
       <div className="container py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-navy">Hola, María 👋</h1>
           <p className="text-muted-foreground mt-1">Aquí está el resumen de tu recuperación</p>
         </div>
+
+        {/* 24h reminder banner */}
+        {next24h && (
+          <Card className="mb-6 p-4 md:p-5 border-l-4 border-l-warning bg-warning/5 shadow-card animate-fade-in">
+            <div className="flex items-start gap-3 flex-wrap">
+              <div className="h-10 w-10 rounded-lg bg-warning/15 text-warning flex items-center justify-center shrink-0">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-[200px]">
+                <div className="font-semibold text-navy">Recordatorio: tienes una sesión en las próximas 24 horas</div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {next24h.physioName} · {new Date(next24h.date).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })} · {next24h.time} · {next24h.modality === "videollamada" ? "Videollamada" : "A domicilio"}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1.5">
+                  Te enviaremos también un recordatorio por WhatsApp y correo.
+                </div>
+              </div>
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/dashboard/citas">Ver cita</Link>
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
