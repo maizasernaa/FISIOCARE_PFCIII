@@ -47,19 +47,25 @@ const PhysioProfile = () => {
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                       <h1 className="font-display text-2xl md:text-3xl font-bold text-navy">{physio.name}</h1>
+                      {physio.verified && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-health text-health-foreground text-sm font-bold uppercase tracking-wide shadow-card">
+                          <ShieldCheck className="h-4 w-4" strokeWidth={3} /> Verificado
+                        </div>
+                      )}
+                      <div className="text-sm text-health font-semibold mt-1.5">
+                        Colegiatura CFF verificada · {physio.colegiatura}
+                      </div>
                       <div className="flex flex-wrap items-center gap-3 mt-2 text-sm">
                         <span className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-warning text-warning" />
                           <span className="font-semibold">{physio.rating.toFixed(1)}</span>
                           <span className="text-muted-foreground">({physio.reviewCount} reseñas)</span>
                         </span>
-                        {physio.verified && (
-                          <Badge className="bg-health-soft text-health hover:bg-health-soft border-0">
-                            <ShieldCheck className="h-3 w-3 mr-1" /> Verificado
-                          </Badge>
-                        )}
                       </div>
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/dashboard/mensajes"><MessageCircle className="h-4 w-4" /> Mensaje</Link>
+                    </Button>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-4">
