@@ -36,6 +36,7 @@ export interface Appointment {
   status: "upcoming" | "completed" | "cancelled";
   price: number;
   notes?: string;
+  exercises?: string[];
 }
 
 export const LIMA_DISTRICTS = [
@@ -188,6 +189,11 @@ export const PHYSIOS: Physio[] = [
 
 export const MOCK_APPOINTMENTS: Appointment[] = [
   {
+    id: "a0", physioId: "p1", physioName: "Dra. Lucía Mendoza",
+    date: dayStr(0), time: "18:00", modality: "videollamada",
+    status: "upcoming", price: 120,
+  },
+  {
     id: "a1", physioId: "p1", physioName: "Dra. Lucía Mendoza",
     date: dayStr(2), time: "11:00", modality: "domicilio",
     status: "upcoming", price: 120,
@@ -197,19 +203,52 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
     date: dayStr(-7), time: "10:00", modality: "videollamada",
     status: "completed", price: 110,
     notes: "Buena evolución de movilidad cervical. Continuar con ejercicios de estiramiento 3x día. Próxima sesión: progresar a banda elástica.",
+    exercises: [
+      "Estiramiento cervical lateral, 10 reps cada lado, 3x día",
+      "Rotaciones suaves de cuello, 8 reps, 2x día",
+      "Fortalecimiento isométrico con toalla, 15 seg x 5 reps",
+    ],
   },
   {
     id: "a3", physioId: "p1", physioName: "Dra. Lucía Mendoza",
     date: dayStr(-14), time: "15:00", modality: "domicilio",
     status: "completed", price: 120,
     notes: "Sesión de evaluación inicial. Diagnóstico: tendinitis rotuliana leve. Plan de 6 sesiones.",
+    exercises: [
+      "Sentadilla isométrica contra pared, 30 seg x 4 reps",
+      "Elevación de pierna recta, 12 reps x 3 series",
+      "Aplicar hielo 15 min post-ejercicio",
+    ],
   },
   {
     id: "a4", physioId: "p5", physioName: "Dra. Andrea Salazar",
     date: dayStr(-30), time: "09:00", modality: "videollamada",
     status: "completed", price: 130,
     notes: "Ejercicios respiratorios. Excelente respuesta del paciente.",
+    exercises: [
+      "Respiración diafragmática, 5 min, 3x día",
+      "Soplado con pajita en agua, 10 reps, 2x día",
+    ],
   },
+];
+
+export interface ChatPreview {
+  physioId: string;
+  physioName: string;
+  photo: string;
+  lastMessage: string;
+  time: string;
+  unread: number;
+}
+
+export const RECENT_CHATS: ChatPreview[] = [
+  { physioId: "p1", physioName: "Dra. Lucía Mendoza", photo: PHYSIOS[0].photo, lastMessage: "Recuerda hacer los estiramientos 3 veces al día.", time: "10:31", unread: 2 },
+  { physioId: "p3", physioName: "Lic. Patricia Quispe", photo: PHYSIOS[2].photo, lastMessage: "Te envié la rutina actualizada.", time: "Ayer", unread: 0 },
+];
+
+export const PHYSIO_RECENT_CHATS: ChatPreview[] = [
+  { physioId: "tp1", physioName: "Andrea Gómez", photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200", lastMessage: "Doctora, ¿puedo cambiar mi cita?", time: "09:12", unread: 3 },
+  { physioId: "tp2", physioName: "Carlos Ramos", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200", lastMessage: "Gracias por la sesión 🙏", time: "Ayer", unread: 0 },
 ];
 
 export const PHYSIO_TODAY_PATIENTS = [
