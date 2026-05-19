@@ -293,6 +293,28 @@ const Booking = () => {
               <Row label="Modalidad" value={modality === "domicilio" ? "Domicilio" : "Videollamada"} />
             </div>
 
+            <div className="max-w-sm mx-auto mt-5 p-4 rounded-lg bg-brand-soft/60 border border-brand/20 text-left">
+              <div className="flex items-start gap-2.5">
+                <div className="flex gap-1 shrink-0">
+                  <MessageCircle className="h-4 w-4 text-brand" />
+                  <Mail className="h-4 w-4 text-brand" />
+                </div>
+                <p className="text-xs text-foreground/85 leading-relaxed">
+                  <strong>Recibirás un recordatorio por WhatsApp y correo 24 horas antes</strong> de tu sesión, con el enlace o dirección y los datos de contacto.
+                </p>
+              </div>
+            </div>
+
+            <div className="max-w-sm mx-auto mt-3">
+              <CancellationPolicyDialog
+                trigger={
+                  <button type="button" className="text-xs text-muted-foreground hover:text-brand underline">
+                    Revisar política de cancelaciones
+                  </button>
+                }
+              />
+            </div>
+
             <div className="flex gap-3 justify-center mt-8">
               <Button variant="outline" asChild><Link to="/buscar">Buscar más</Link></Button>
               <Button variant="hero" asChild><Link to="/dashboard"><Calendar /> Ir a mi panel</Link></Button>
