@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      citas: {
+        Row: {
+          created_at: string
+          especialidad: string
+          fecha: string
+          fisioterapeuta: string | null
+          hora: string | null
+          id: string
+          modalidad: string | null
+          nombre: string
+          notas: string | null
+          telefono: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          especialidad: string
+          fecha: string
+          fisioterapeuta?: string | null
+          hora?: string | null
+          id?: string
+          modalidad?: string | null
+          nombre: string
+          notas?: string | null
+          telefono: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          especialidad?: string
+          fecha?: string
+          fisioterapeuta?: string | null
+          hora?: string | null
+          id?: string
+          modalidad?: string | null
+          nombre?: string
+          notas?: string | null
+          telefono?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
