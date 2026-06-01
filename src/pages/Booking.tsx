@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info, Loader2 } from "lucide-react";
+import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info, Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,20 @@ const Booking = () => {
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user?.user_metadata?.full_name) {
+        setNombre(session.user.user_metadata.full_name);
+      }
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   if (!physio) {
     return <div className="container py-20 text-center">No encontrado</div>;
@@ -33,7 +47,17 @@ const Booking = () => {
 
   const steps = ["Modalidad", "Fecha y hora", "Resumen", "Pago", "Confirmación"];
 
-  const next = () => setStep((s) => Math.min(5, s + 1) as Step);
+  const next = async () => {
+    if (step === 3) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Debes iniciar sesión para reservar una cita");
+        navigate(`/auth?redirect=${encodeURIComponent(`/reservar/${id}`)}`);
+        return;
+      }
+    }
+    setStep((s) => Math.min(5, s + 1) as Step);
+  };
   const back = () => setStep((s) => Math.max(1, s - 1) as Step);
 
   const canNext =
@@ -46,8 +70,13 @@ const Booking = () => {
     setSaving(true);
     try {
       const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        toast.error("Sesión expirada. Por favor inicia sesión de nuevo.");
+        navigate(`/auth?redirect=${encodeURIComponent(`/reservar/${id}`)}`);
+        return;
+      }
       const { error } = await supabase.from("citas").insert({
-        user_id: sess.session?.user.id ?? null,
+        user_id: sess.session.user.id,
         nombre: nombre.trim(),
         telefono: telefono.trim(),
         fecha: date,
@@ -232,6 +261,25 @@ const Booking = () => {
                 </div>
               </div>
             </div>
+
+            {!user && (
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg flex gap-3 items-start">
+                <Lock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-800">Inicia sesión para continuar</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    Solo los usuarios registrados pueden reservar citas.{" "}
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/auth?redirect=${encodeURIComponent(`/reservar/${id}`)}`)}
+                      className="font-semibold underline hover:text-amber-900"
+                    >
+                      Iniciar sesión o registrarse
+                    </button>
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 p-4 bg-health-soft rounded-lg flex gap-3 items-start">
               <ShieldCheck className="h-5 w-5 text-health shrink-0 mt-0.5" />
