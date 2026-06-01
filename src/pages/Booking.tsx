@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info } from "lucide-react";
+import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { PHYSIOS, type Modality } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { CancellationPolicyDialog } from "@/components/CancellationPolicyDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -23,6 +23,9 @@ const Booking = () => {
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [payment, setPayment] = useState<"yape" | "card" | null>(null);
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [saving, setSaving] = useState(false);
 
   if (!physio) {
     return <div className="container py-20 text-center">No encontrado</div>;
@@ -36,12 +39,31 @@ const Booking = () => {
   const canNext =
     (step === 1 && modality) ||
     (step === 2 && date && time) ||
-    (step === 3) ||
+    (step === 3 && nombre.trim().length >= 2 && telefono.trim().length >= 6) ||
     (step === 4 && payment);
 
-  const handlePay = () => {
-    toast.success("¡Pago confirmado!");
-    setStep(5);
+  const handlePay = async () => {
+    setSaving(true);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const { error } = await supabase.from("citas").insert({
+        user_id: sess.session?.user.id ?? null,
+        nombre: nombre.trim(),
+        telefono: telefono.trim(),
+        fecha: date,
+        hora: time,
+        especialidad: physio.specialties[0] ?? "General",
+        fisioterapeuta: physio.name,
+        modalidad: modality,
+      });
+      if (error) throw error;
+      toast.success("¡Pago confirmado y cita guardada!");
+      setStep(5);
+    } catch (err: any) {
+      toast.error(err?.message || "No se pudo guardar la cita");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -197,6 +219,20 @@ const Booking = () => {
               </div>
             </div>
 
+            <div className="mt-5 space-y-3">
+              <h3 className="font-display font-semibold text-navy text-sm">Tus datos de contacto</h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="nombre">Nombre completo</Label>
+                  <Input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="María Gonzales" required />
+                </div>
+                <div>
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <Input id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="+51 999 888 777" required />
+                </div>
+              </div>
+            </div>
+
             <div className="mt-4 p-4 bg-health-soft rounded-lg flex gap-3 items-start">
               <ShieldCheck className="h-5 w-5 text-health shrink-0 mt-0.5" />
               <div className="flex-1">
@@ -333,8 +369,8 @@ const Booking = () => {
                 Continuar <ArrowRight />
               </Button>
             ) : (
-              <Button variant="health" onClick={handlePay} disabled={!canNext}>
-                Confirmar pago <Check />
+              <Button variant="health" onClick={handlePay} disabled={!canNext || saving}>
+                {saving ? <><Loader2 className="animate-spin" /> Procesando</> : <>Confirmar pago <Check /></>}
               </Button>
             )}
           </div>

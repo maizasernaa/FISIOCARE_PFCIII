@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Activity, User, Stethoscope } from "lucide-react";
+import { Activity, User, Stethoscope, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 type Mode = "login" | "register";
 type Role = "paciente" | "fisio";
@@ -16,12 +17,58 @@ const Auth = ({ mode }: { mode: Mode }) => {
   const [params] = useSearchParams();
   const initialRole = (params.get("role") as Role) || "paciente";
   const [role, setRole] = useState<Role>(initialRole);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  // If already logged in, redirect away from auth pages
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+      }
+    });
+  }, [navigate, role]);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(mode === "login" ? "Sesión iniciada" : "Cuenta creada exitosamente");
-    if (role === "fisio") navigate("/dashboard-fisio");
-    else navigate("/dashboard");
+    setLoading(true);
+    try {
+      if (mode === "register") {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: { full_name: name, role },
+          },
+        });
+        if (error) throw error;
+        if (data.session) {
+          toast.success("¡Cuenta creada! Bienvenido a FisioCare");
+          navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+        } else {
+          toast.success("Te enviamos un correo para confirmar tu cuenta");
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("Sesión iniciada");
+        navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Ocurrió un error";
+      if (msg.toLowerCase().includes("invalid login")) {
+        toast.error("Correo o contraseña incorrectos");
+      } else if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already been registered")) {
+        toast.error("Este correo ya está registrado. Inicia sesión.");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,19 +113,20 @@ const Auth = ({ mode }: { mode: Mode }) => {
             {mode === "register" && (
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre completo</Label>
-                <Input id="name" placeholder="María Gonzales" required />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="María Gonzales" required />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
-              <Input id="email" type="email" placeholder="tu@correo.com" required />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" type="password" placeholder="••••••••" required />
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" minLength={6} required />
             </div>
 
-            <Button type="submit" variant="hero" size="lg" className="w-full">
+            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
             </Button>
 
