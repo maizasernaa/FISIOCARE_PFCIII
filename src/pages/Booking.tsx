@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info } from "lucide-react";
+import { Home, Video, Check, CreditCard, Smartphone, ShieldCheck, ArrowLeft, ArrowRight, Calendar, MessageCircle, Mail, Info, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { PHYSIOS, type Modality } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { CancellationPolicyDialog } from "@/components/CancellationPolicyDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
