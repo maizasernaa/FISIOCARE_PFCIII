@@ -369,8 +369,8 @@ const Booking = () => {
                 Continuar <ArrowRight />
               </Button>
             ) : (
-              <Button variant="health" onClick={handlePay} disabled={!canNext}>
-                Confirmar pago <Check />
+              <Button variant="health" onClick={handlePay} disabled={!canNext || saving}>
+                {saving ? <><Loader2 className="animate-spin" /> Procesando</> : <>Confirmar pago <Check /></>}
               </Button>
             )}
           </div>
