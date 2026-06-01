@@ -219,6 +219,20 @@ const Booking = () => {
               </div>
             </div>
 
+            <div className="mt-5 space-y-3">
+              <h3 className="font-display font-semibold text-navy text-sm">Tus datos de contacto</h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="nombre">Nombre completo</Label>
+                  <Input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="María Gonzales" required />
+                </div>
+                <div>
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <Input id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="+51 999 888 777" required />
+                </div>
+              </div>
+            </div>
+
             <div className="mt-4 p-4 bg-health-soft rounded-lg flex gap-3 items-start">
               <ShieldCheck className="h-5 w-5 text-health shrink-0 mt-0.5" />
               <div className="flex-1">
