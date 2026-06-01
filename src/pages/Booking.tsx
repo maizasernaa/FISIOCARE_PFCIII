@@ -23,6 +23,9 @@ const Booking = () => {
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [payment, setPayment] = useState<"yape" | "card" | null>(null);
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [saving, setSaving] = useState(false);
 
   if (!physio) {
     return <div className="container py-20 text-center">No encontrado</div>;
@@ -36,12 +39,31 @@ const Booking = () => {
   const canNext =
     (step === 1 && modality) ||
     (step === 2 && date && time) ||
-    (step === 3) ||
+    (step === 3 && nombre.trim().length >= 2 && telefono.trim().length >= 6) ||
     (step === 4 && payment);
 
-  const handlePay = () => {
-    toast.success("¡Pago confirmado!");
-    setStep(5);
+  const handlePay = async () => {
+    setSaving(true);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const { error } = await supabase.from("citas").insert({
+        user_id: sess.session?.user.id ?? null,
+        nombre: nombre.trim(),
+        telefono: telefono.trim(),
+        fecha: date,
+        hora: time,
+        especialidad: physio.specialties[0] ?? "General",
+        fisioterapeuta: physio.name,
+        modalidad: modality,
+      });
+      if (error) throw error;
+      toast.success("¡Pago confirmado y cita guardada!");
+      setStep(5);
+    } catch (err: any) {
+      toast.error(err?.message || "No se pudo guardar la cita");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
