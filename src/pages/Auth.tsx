@@ -22,14 +22,16 @@ const Auth = ({ mode }: { mode: Mode }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const redirectTo = params.get("redirect") || (role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+
   // If already logged in, redirect away from auth pages
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
-        navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+        navigate(redirectTo);
       }
     });
-  }, [navigate, role]);
+  }, [navigate, role, redirectTo]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
