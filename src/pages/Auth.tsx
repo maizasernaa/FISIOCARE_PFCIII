@@ -49,7 +49,7 @@ const Auth = ({ mode }: { mode: Mode }) => {
         if (error) throw error;
         if (data.session) {
           toast.success("¡Cuenta creada! Bienvenido a FisioCare");
-          navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+          navigate(redirectTo);
         } else {
           toast.success("Te enviamos un correo para confirmar tu cuenta");
         }
@@ -57,7 +57,7 @@ const Auth = ({ mode }: { mode: Mode }) => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Sesión iniciada");
-        navigate(role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+        navigate(redirectTo);
       }
     } catch (err: any) {
       const msg = err?.message || "Ocurrió un error";
