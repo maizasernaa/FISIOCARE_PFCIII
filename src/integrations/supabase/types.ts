@@ -17,42 +17,316 @@ export type Database = {
       citas: {
         Row: {
           created_at: string
-          especialidad: string
-          fecha: string
-          fisioterapeuta: string | null
-          hora: string | null
+          direccion_exacta: string | null
+          distrito_cruce: string | null
+          ejercicios_recomendados: string | null
+          especialidad_id: string | null
+          estado: string
+          fecha_cita: string
+          fisioterapeuta_id: string
+          hora_cita: string | null
           id: string
-          modalidad: string | null
-          nombre: string
-          notas: string | null
-          telefono: string
-          user_id: string | null
+          modalidad: string
+          notas_fisioterapeuta: string | null
+          paciente_id: string
         }
         Insert: {
           created_at?: string
-          especialidad: string
-          fecha: string
-          fisioterapeuta?: string | null
-          hora?: string | null
+          direccion_exacta?: string | null
+          distrito_cruce?: string | null
+          ejercicios_recomendados?: string | null
+          especialidad_id?: string | null
+          estado?: string
+          fecha_cita: string
+          fisioterapeuta_id: string
+          hora_cita?: string | null
           id?: string
-          modalidad?: string | null
-          nombre: string
-          notas?: string | null
-          telefono: string
-          user_id?: string | null
+          modalidad: string
+          notas_fisioterapeuta?: string | null
+          paciente_id: string
         }
         Update: {
           created_at?: string
-          especialidad?: string
-          fecha?: string
-          fisioterapeuta?: string | null
-          hora?: string | null
+          direccion_exacta?: string | null
+          distrito_cruce?: string | null
+          ejercicios_recomendados?: string | null
+          especialidad_id?: string | null
+          estado?: string
+          fecha_cita?: string
+          fisioterapeuta_id?: string
+          hora_cita?: string | null
           id?: string
-          modalidad?: string | null
+          modalidad?: string
+          notas_fisioterapeuta?: string | null
+          paciente_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "citas_especialidad_id_fkey"
+            columns: ["especialidad_id"]
+            isOneToOne: false
+            referencedRelation: "especialidades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citas_fisioterapeuta_id_fkey"
+            columns: ["fisioterapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "fisioterapeutas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citas_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      especialidades: {
+        Row: {
+          descripcion: string | null
+          id: string
+          nombre: string
+        }
+        Insert: {
+          descripcion?: string | null
+          id?: string
+          nombre: string
+        }
+        Update: {
+          descripcion?: string | null
+          id?: string
           nombre?: string
-          notas?: string | null
-          telefono?: string
-          user_id?: string | null
+        }
+        Relationships: []
+      }
+      fisioterapeuta_especialidades: {
+        Row: {
+          especialidad_id: string
+          fisioterapeuta_id: string
+        }
+        Insert: {
+          especialidad_id: string
+          fisioterapeuta_id: string
+        }
+        Update: {
+          especialidad_id?: string
+          fisioterapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fisioterapeuta_especialidades_especialidad_id_fkey"
+            columns: ["especialidad_id"]
+            isOneToOne: false
+            referencedRelation: "especialidades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fisioterapeuta_especialidades_fisioterapeuta_id_fkey"
+            columns: ["fisioterapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "fisioterapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fisioterapeuta_tarifas: {
+        Row: {
+          especialidad_id: string | null
+          fisioterapeuta_id: string
+          id: string
+          modalidad: string
+          precio: number
+        }
+        Insert: {
+          especialidad_id?: string | null
+          fisioterapeuta_id: string
+          id?: string
+          modalidad: string
+          precio: number
+        }
+        Update: {
+          especialidad_id?: string | null
+          fisioterapeuta_id?: string
+          id?: string
+          modalidad?: string
+          precio?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fisioterapeuta_tarifas_especialidad_id_fkey"
+            columns: ["especialidad_id"]
+            isOneToOne: false
+            referencedRelation: "especialidades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fisioterapeuta_tarifas_fisioterapeuta_id_fkey"
+            columns: ["fisioterapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "fisioterapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fisioterapeutas: {
+        Row: {
+          anos_experiencia: number | null
+          bio: string | null
+          calificacion: number | null
+          colegiatura: string | null
+          created_at: string
+          disponibilidad: boolean | null
+          distritos_cobertura: string[] | null
+          documentos_validados: boolean | null
+          foto_url: string | null
+          id: string
+          modalidades: string[] | null
+          total_resenas: number | null
+          url_colegiatura: string | null
+          url_diploma: string | null
+          url_dni: string | null
+        }
+        Insert: {
+          anos_experiencia?: number | null
+          bio?: string | null
+          calificacion?: number | null
+          colegiatura?: string | null
+          created_at?: string
+          disponibilidad?: boolean | null
+          distritos_cobertura?: string[] | null
+          documentos_validados?: boolean | null
+          foto_url?: string | null
+          id: string
+          modalidades?: string[] | null
+          total_resenas?: number | null
+          url_colegiatura?: string | null
+          url_diploma?: string | null
+          url_dni?: string | null
+        }
+        Update: {
+          anos_experiencia?: number | null
+          bio?: string | null
+          calificacion?: number | null
+          colegiatura?: string | null
+          created_at?: string
+          disponibilidad?: boolean | null
+          distritos_cobertura?: string[] | null
+          documentos_validados?: boolean | null
+          foto_url?: string | null
+          id?: string
+          modalidades?: string[] | null
+          total_resenas?: number | null
+          url_colegiatura?: string | null
+          url_diploma?: string | null
+          url_dni?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fisioterapeutas_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notificaciones_alertas: {
+        Row: {
+          canal: string
+          created_at: string
+          estado_envio: string
+          id: string
+          mensaje: string | null
+          tipo: string
+          usuario_id: string
+        }
+        Insert: {
+          canal?: string
+          created_at?: string
+          estado_envio?: string
+          id?: string
+          mensaje?: string | null
+          tipo: string
+          usuario_id: string
+        }
+        Update: {
+          canal?: string
+          created_at?: string
+          estado_envio?: string
+          id?: string
+          mensaje?: string | null
+          tipo?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificaciones_alertas_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pagos: {
+        Row: {
+          cita_id: string
+          estado_pago: string
+          fecha_pago: string
+          id: string
+          metodo_pago: string
+          monto: number
+        }
+        Insert: {
+          cita_id: string
+          estado_pago?: string
+          fecha_pago?: string
+          id?: string
+          metodo_pago: string
+          monto: number
+        }
+        Update: {
+          cita_id?: string
+          estado_pago?: string
+          fecha_pago?: string
+          id?: string
+          metodo_pago?: string
+          monto?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagos_cita_id_fkey"
+            columns: ["cita_id"]
+            isOneToOne: false
+            referencedRelation: "citas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      perfiles: {
+        Row: {
+          fecha_registro: string
+          id: string
+          nombre_completo: string
+          rol: string
+          telefono: string | null
+        }
+        Insert: {
+          fecha_registro?: string
+          id: string
+          nombre_completo?: string
+          rol?: string
+          telefono?: string | null
+        }
+        Update: {
+          fecha_registro?: string
+          id?: string
+          nombre_completo?: string
+          rol?: string
+          telefono?: string | null
         }
         Relationships: []
       }
