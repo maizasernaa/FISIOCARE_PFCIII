@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { RECENT_CHATS } from "@/data/mockData";
+// Importamos el cliente real de Supabase
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { to: "/", label: "Inicio" },
@@ -25,9 +27,18 @@ export const Header = () => {
   const navigate = useNavigate();
   const unread = RECENT_CHATS.reduce((s, c) => s + c.unread, 0);
 
-  const handleLogout = () => {
-    toast.success("Sesión cerrada");
-    navigate("/");
+  // Función corregida: Ahora sí cierra la sesión en el servidor
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      toast.success("Sesión cerrada correctamente");
+      navigate("/");
+    } catch (error: any) {
+      console.error("Error al cerrar sesión:", error.message);
+      toast.error("Hubo un problema al cerrar la sesión");
+    }
   };
 
   return (
@@ -119,6 +130,7 @@ export const Header = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              {/* Aquí se llama a la función conectada a Supabase */}
               <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer focus:text-destructive">
                 <LogOut className="h-4 w-4 mr-2" /> Cerrar sesión
               </DropdownMenuItem>
