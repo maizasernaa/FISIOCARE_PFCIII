@@ -40,49 +40,49 @@ const Auth = ({ mode }: { mode: Mode }) => {
   }, [navigate, redirectTo]);
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (mode === "register") {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              full_name: name,
-              nombre_completo: name,
-              telefono,
-              rol: "paciente",
-            },
+  e.preventDefault();
+  setLoading(true);
+  try {
+    if (mode === "register") {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: ${window.location.origin}/,
+          data: {
+            full_name: name,
+            nombre_completo: name,
+            telefono,
+            rol: role, // ◄--- SOLUCIÓN: Ahora asigna dinámicamente "paciente" o "fisioterapeuta"
           },
-        });
-        if (error) throw error;
-        if (data.session) {
-          toast.success("¡Cuenta creada! Bienvenido a FisioCare");
-          navigate(redirectTo);
-        } else {
-          toast.success("Te enviamos un correo para confirmar tu cuenta");
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Sesión iniciada");
+        },
+      });
+      if (error) throw error;
+      if (data.session) {
+        toast.success("¡Cuenta creada! Bienvenido a FisioCare");
         navigate(redirectTo);
-      }
-    } catch (err: any) {
-      const msg = err?.message || "Ocurrió un error";
-      if (msg.toLowerCase().includes("invalid login")) {
-        toast.error("Correo o contraseña incorrectos");
-      } else if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already been registered")) {
-        toast.error("Este correo ya está registrado. Inicia sesión.");
       } else {
-        toast.error(msg);
+        toast.success("Te enviamos un correo para confirmar tu cuenta");
       }
-    } finally {
-      setLoading(false);
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Sesión iniciada");
+      navigate(redirectTo);
     }
-  };
+  } catch (err: any) {
+    const msg = err?.message  "Ocurrió un error";
+    if (msg.toLowerCase().includes("invalid login")) {
+      toast.error("Correo o contraseña incorrectos");
+    } else if (msg.toLowerCase().includes("already registered")  msg.toLowerCase().includes("already been registered")) {
+      toast.error("Este correo ya está registrado. Inicia sesión.");
+    } else {
+      toast.error(msg);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
