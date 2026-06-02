@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
 type Mode = "login" | "register";
-type Role = "paciente" | "fisio";
+type Role = "paciente" | "fisioterapeuta";
 
 const Auth = ({ mode }: { mode: Mode }) => {
   const navigate = useNavigate();
@@ -18,20 +18,26 @@ const Auth = ({ mode }: { mode: Mode }) => {
   const initialRole = (params.get("role") as Role) || "paciente";
   const [role, setRole] = useState<Role>(initialRole);
   const [name, setName] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const redirectTo = params.get("redirect") || (role === "fisio" ? "/dashboard-fisio" : "/dashboard");
+  const dashboardFor = (r: Role) => (r === "fisioterapeuta" ? "/dashboard-fisio" : "/dashboard");
+  const redirectTo = params.get("redirect") || dashboardFor(role);
 
-  // If already logged in, redirect away from auth pages
+  // Si elige rol fisio en registro, derivarlo al onboarding profesional completo
+  useEffect(() => {
+    if (mode === "register" && role === "fisioterapeuta") {
+      navigate("/registro-fisio", { replace: true });
+    }
+  }, [mode, role, navigate]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        navigate(redirectTo);
-      }
+      if (data.session) navigate(redirectTo);
     });
-  }, [navigate, role, redirectTo]);
+  }, [navigate, redirectTo]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +49,12 @@ const Auth = ({ mode }: { mode: Mode }) => {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: name, role },
+            data: {
+              full_name: name,
+              nombre_completo: name,
+              telefono,
+              rol: "paciente",
+            },
           },
         });
         if (error) throw error;
@@ -94,7 +105,7 @@ const Auth = ({ mode }: { mode: Mode }) => {
           <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg mb-6">
             {([
               { v: "paciente", icon: User, label: "Paciente" },
-              { v: "fisio", icon: Stethoscope, label: "Fisioterapeuta" },
+              { v: "fisioterapeuta", icon: Stethoscope, label: "Fisioterapeuta" },
             ] as const).map((opt) => (
               <button
                 key={opt.v}
@@ -111,33 +122,44 @@ const Auth = ({ mode }: { mode: Mode }) => {
             ))}
           </div>
 
-          <form onSubmit={submit} className="space-y-4">
-            {mode === "register" && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre completo</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="María Gonzales" required />
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" minLength={6} required />
-            </div>
-
-            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
-            </Button>
-
-            {role === "fisio" && mode === "register" && (
-              <p className="text-xs text-center text-muted-foreground">
-                Luego completarás tu perfil profesional con colegiatura y documentos.
+          {mode === "register" && role === "fisioterapeuta" ? (
+            <div className="text-center py-6 space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Como profesional necesitas completar tu perfil verificado.
               </p>
-            )}
-          </form>
+              <Button variant="hero" size="lg" className="w-full" onClick={() => navigate("/registro-fisio")}>
+                Únete como profesional
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={submit} className="space-y-4">
+              {mode === "register" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nombre completo</Label>
+                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="María Gonzales" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefono">Teléfono</Label>
+                    <Input id="telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="+51 999 888 777" />
+                  </div>
+                </>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">Correo electrónico</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Contraseña</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" minLength={6} required />
+              </div>
+
+              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
+              </Button>
+            </form>
+          )}
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             {mode === "login" ? (
